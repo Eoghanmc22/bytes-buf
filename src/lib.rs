@@ -72,6 +72,7 @@
 //! perform a syscall, which has the potential of failing. Operations on `Buf`
 //! and `BufMut` are infallible.
 
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
 #[cfg(feature = "std")]
@@ -80,37 +81,8 @@ extern crate std;
 pub mod buf;
 pub use crate::buf::{Buf, BufMut};
 
-mod bytes;
-mod bytes_mut;
 mod fmt;
 mod loom;
-pub use crate::bytes::Bytes;
-pub use crate::bytes_mut::BytesMut;
-
-// Optional Serde support
-#[cfg(feature = "serde")]
-mod serde;
-
-#[inline(never)]
-#[cold]
-fn abort() -> ! {
-    #[cfg(feature = "std")]
-    {
-        std::process::abort();
-    }
-
-    #[cfg(not(feature = "std"))]
-    {
-        struct Abort;
-        impl Drop for Abort {
-            fn drop(&mut self) {
-                panic!();
-            }
-        }
-        let _a = Abort;
-        panic!("abort");
-    }
-}
 
 #[inline(always)]
 #[cfg(feature = "std")]

@@ -1,6 +1,6 @@
 [package]
 
-name = "bytes"
+name = "bytes-buf"
 # When releasing to crates.io:
 # - Update CHANGELOG.md.
 # - Create "v1.x.y" git tag.
@@ -20,13 +20,8 @@ categories = ["network-programming", "data-structures"]
 
 [features]
 default = ["std"]
-std = []
-
-[dependencies]
-serde = { version = "1.0.60", optional = true, default-features = false, features = ["alloc"] }
-
-[dev-dependencies]
-serde_test = "1.0"
+std = ["alloc"]
+alloc = []
 
 [target.'cfg(loom)'.dev-dependencies]
 loom = "0.7"

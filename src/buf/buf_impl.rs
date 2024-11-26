@@ -8,6 +8,7 @@ use crate::{panic_advance, panic_does_not_fit};
 #[cfg(feature = "std")]
 use std::io::IoSlice;
 
+#[cfg(feature = "alloc")]
 use alloc::boxed::Box;
 
 macro_rules! buf_get_impl {
@@ -1113,37 +1114,6 @@ pub trait Buf {
         f64::from_bits(self.get_u64_ne())
     }
 
-    /// Consumes `len` bytes inside self and returns new instance of `Bytes`
-    /// with this data.
-    ///
-    /// This function may be optimized by the underlying type to avoid actual
-    /// copies. For example, `Bytes` implementation will do a shallow copy
-    /// (ref-count increment).
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use bytes::Buf;
-    ///
-    /// let bytes = (&b"hello world"[..]).copy_to_bytes(5);
-    /// assert_eq!(&bytes[..], &b"hello"[..]);
-    /// ```
-    ///
-    /// # Panics
-    ///
-    /// This function panics if `len > self.remaining()`.
-    fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
-        use super::BufMut;
-
-        if self.remaining() < len {
-            panic_advance(len, self.remaining());
-        }
-
-        let mut ret = crate::BytesMut::with_capacity(len);
-        ret.put(self.take(len));
-        ret.freeze()
-    }
-
     /// Creates an adaptor which will read at most `limit` bytes from `self`.
     ///
     /// This function returns a new instance of `Buf` which will read at most
@@ -1389,11 +1359,6 @@ macro_rules! deref_forward_buf {
         fn get_int_ne(&mut self, nbytes: usize) -> i64 {
             (**self).get_int_ne(nbytes)
         }
-
-        #[inline]
-        fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
-            (**self).copy_to_bytes(len)
-        }
     };
 }
 
@@ -1401,6 +1366,7 @@ impl<T: Buf + ?Sized> Buf for &mut T {
     deref_forward_buf!();
 }
 
+#[cfg(feature = "alloc")]
 impl<T: Buf + ?Sized> Buf for Box<T> {
     deref_forward_buf!();
 }

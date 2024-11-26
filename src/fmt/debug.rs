@@ -1,7 +1,6 @@
 use core::fmt::{Debug, Formatter, Result};
 
 use super::BytesRef;
-use crate::{Bytes, BytesMut};
 
 /// Alternative implementation of `std::fmt::Debug` for byte slice.
 ///
@@ -35,6 +34,3 @@ impl Debug for BytesRef<'_> {
         Ok(())
     }
 }
-
-fmt_impl!(Debug, Bytes);
-fmt_impl!(Debug, BytesMut);
