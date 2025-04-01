@@ -148,14 +148,6 @@ impl<T: Buf> Buf for Take<T> {
         self.limit -= cnt;
     }
 
-    fn copy_to_bytes(&mut self, len: usize) -> crate::Bytes {
-        assert!(len <= self.remaining(), "`len` greater than remaining");
-
-        let r = self.inner.copy_to_bytes(len);
-        self.limit -= len;
-        r
-    }
-
     #[cfg(feature = "std")]
     fn chunks_vectored<'a>(&'a self, dst: &mut [IoSlice<'a>]) -> usize {
         if self.limit == 0 {

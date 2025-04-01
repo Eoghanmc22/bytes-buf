@@ -23,6 +23,7 @@ mod limit;
 mod reader;
 mod take;
 mod uninit_slice;
+#[cfg(feature = "alloc")]
 mod vec_deque;
 #[cfg(feature = "std")]
 mod writer;
